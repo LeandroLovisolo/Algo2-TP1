@@ -184,8 +184,9 @@ Recuperatorio   &&\\
         darÁrbolDeCategorías($lli$) \igobs \\
         \hspace*{5mm}darÁrbolDeCategorías($lli'$) $\land$ \\
 		links($lli$) \igobs links($lli'$) $\yluego$ \\
-		$(\forall l:\text{link})$ ($l$ $\in$ links($lli$) $\impluego$ ( \\
-		\hspace*{5mm}categoríaLink($l$, $lli$) \igobs categoríaLink($l$, $lli'$) $\land$ \\
+		$(\forall l:\text{link})$ ($l$ $\in$ links($lli$) $\impluego$ \\
+		\hspace*{5mm}(categoríaLink($l$, $lli$) \igobs \\
+		\hspace*{10mm}categoríaLink($l$, $lli'$) $\land$ \\
 		\hspace*{5mm}$(\forall d:\text{día})$ (\#AccesosPorDía($l$, $d$, $lli$) \igobs \\
 		\hspace*{10mm}\#AccesosPorDía($l$, $d$, $lli'$))))	
 	}
