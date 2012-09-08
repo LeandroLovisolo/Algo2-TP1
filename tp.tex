@@ -1,5 +1,5 @@
 \documentclass[10pt, a4paper]{article}
-\usepackage[paper=a4paper, left=1.5cm, right=1.5cm, bottom=1.5cm, top=3.5cm]{geometry}
+\usepackage[paper=a4paper, left=1.5cm, right=1.5cm, bottom=2cm, top=2.5cm]{geometry}
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[spanish]{babel}
@@ -50,6 +50,8 @@
 \thispagestyle{empty}
 
 \begin{center}
+
+\vspace*{1cm}
 
 \begin{Huge}
 Algoritmos y Estructuras de Datos II
@@ -114,13 +116,13 @@ Recuperatorio   &&\\
 
 %TADS
 \section{TAD \tadNombre{Categoría}}
-\noindent \textbf{TAD \textsc{Categoría} es \textsc{String}}
+\noindent \textbf{TAD \tadNombre{Categoría} es \tadNombre{String}}
 
 \section{TAD \tadNombre{Link}}
-\noindent \textbf{TAD \textsc{Link} es \textsc{String}}
+\noindent \textbf{TAD \tadNombre{Link} es \tadNombre{String}}
 
 \section{TAD \tadNombre{Día}}
-\noindent \textbf{TAD \textsc{Día} es \textsc{Nat}}
+\noindent \textbf{TAD \tadNombre{Día} es \tadNombre{Nat}}
 
 \section{TAD \tadNombre{ÁrbolDeCategorías}}
 \begin{tad}{\tadNombre{ÁrbolDeCategorías}}
@@ -129,14 +131,17 @@ Recuperatorio   &&\\
 	
 	\tadExporta{árbolDeCategorías, generadores, observadores básicos, contiene?, buscarNodo, aplanar}
 	
-	\tadUsa{\tadNombre{Bool, Categoría, Conjunto(ÁrbolDeCategorías), Conjunto(Categoría)}}
+	\tadUsa{\tadNombre{Nat, Bool, Categoría, Conjunto(Categoría), Conjunto(ÁrbolDeCategorías),\\ Secuencia(Categoría), Secuencia(ÁrbolDeCategorías)}}
 	
 	\tadIgualdadObservacional{a}{a'}{árbolDeCategorías}{raíz($a$) \igobs raíz($a'$) $\land$ hijos($a$) \igobs hijos($a'$)}
 
-	\tadAlinearFunciones{buscarNodoEnConjunto}{categoría/c,conj(árbolDeCategorías)/as}
+	\tadAlinearFunciones{transformarEnSecuencia}{categoría/c,conj(árbolDeCategorías)/as}
 	
 	\tadGeneradores
-	\tadOperacion{árbol}{categoría/c,conj(árbolDeCategorías)/as}{árbolDeCategorías}{}
+	\tadOperacion{árbol}{categoría/c,conj(árbolDeCategorías)/as}{árbolDeCategorías}{
+		(\paratodo{categoría}{c'})
+			(\#Ocurrencias($c'$, \secuencia{$c$}[aplanarSecuencia(transformarEnSecuencia($as$))) $\leq$ 1) ]
+	}
 	
 	\tadObservadores
 	\tadOperacion{raíz}{árbolDeCategorías}{categoría}{}
@@ -147,16 +152,19 @@ Recuperatorio   &&\\
 	\tadOperacion{buscarNodo}{categoría/c,árbolDeCategorías/a}{árbolDeCategorías}{contiene?($c$, $a$)}
 	\tadOperacion{buscarNodoEnConjunto}{categoría,conj(árbolDeCategorías)}{árbolDeCategorías}{}
 	\tadOperacion{aplanar}{árbolDeCategorías}{conj(categoría)}{}
-	\tadOperacion{aplanarConjunto}{conj(árbolDeCategorías)}{conj(categoría)}{}	
+	\tadOperacion{aplanarConjunto}{conj(árbolDeCategorías)}{conj(categoría)}{}
+	\tadOperacion{transformarEnSecuencia}{conj(árbolDeCategorías)}{secu(árbolDeCategorías)}{}
+	\tadOperacion{aplanarSecuencia}{secu(árbolDeCategorías)}{secu(categoría)}{}
+	\tadOperacion{\#Ocurrencias}{categoría,secu(categoría)}{nat}{}		
 
-	\tadAxiomas[\paratodo{categoría}{c}, \paratodo{árbolDeCategorías}{a}, \paratodo{conj(árbolDeCategorías)}{as}]
+	\tadAxiomas[\paratodo{categoría}{c}, \paratodo{árbolDeCategorías}{a}, \paratodo{conj(árbolDeCategorías)}{as},\\ \paratodo{secu(categoría)}{scs}, \paratodo{secu(árbolDeCategorías)}{sas}]
 	\tadAlinearAxiomas{buscarNodoEnConjunto($c$, $as$)}	
 	\tadAxioma{raíz(árbol($c$, $as$))}{$c$}
 	\tadAxioma{hijos(árbol($c$, $as$))}{$as$}
 	\tadAxioma{contiene?($c$, $a$)}{$c$ $\in$ aplanar($a$)}	
 	\tadAxioma{buscarNodo($c$, $a$)}{buscarNodoEnConjunto($c$, Ag($a$, $\emptyset$))}		
 	\tadAxioma{buscarNodoEnConjunto($c$, $as$)}{
-		\IF $c$ = raíz(dameUno($as$)
+		\IF $c$ = raíz(dameUno($as$))
 		THEN dameUno($as$)
 		ELSE buscarNodoEnConjunto($c$, hijos(dameUno($as$)) $\cup$ sinUno($as$))
 		FI
@@ -169,6 +177,30 @@ Recuperatorio   &&\\
 			\hspace*{5mm}aplanarConjunto(hijos(dameUno($as$)) $\cup$ sinUno($as$)))
 		FI
 	}
+	\tadAxioma{transformarEnSecuencia($as$)}{
+		\IF $\emptyset$?($as$)
+		THEN \secuencia{}
+		ELSE \secuencia{dameUno($as$)}[transformarEnSecuencia(sinUno($as$))]
+		FI
+	}
+	\tadAxioma{aplanarSecuencia($sas$)}{
+		\IF vacía?($sas$)
+		THEN \secuencia{}
+		ELSE \secuencia{raíz(prim($sas$))}[aplanarSecuencia(\\
+		\hspace*{5mm}transformarEnSecuencia(hijos(prim($sas$))) \& fin($sas$))]
+		FI
+	}	
+	\tadAxioma{\#Ocurrencias($c$, $scs$)}{
+		\IF vacía?($scs$)
+		THEN 0
+		ELSE
+			({\IF $c$ = prim($scs$)
+			THEN 1
+			ELSE 0
+			FI}) + \#Ocurrencias($c$, fin($scs$))
+		FI
+	}
+	
 \end{tad}
 
 \section{TAD \tadNombre{LinkLinkIt}}
@@ -222,8 +254,8 @@ Recuperatorio   &&\\
 	\tadAxioma{darÁrbolDeCategorías(registrarLink($l$, $c$, $lli$))}{darÁrbolDeCategorías($lli$)}
 	\tadAxioma{darÁrbolDeCategorías(registrarAcceso($l$, $d$, $lli$))}{darÁrbolDeCategorías($lli$)}	
 	\tadAxioma{links(iniciar($a$))}{$\emptyset$}
-	\tadAxioma{links(registrarLink($l$, $c$, $lli$)}{Ag($l$, links($lli$))}
-	\tadAxioma{links(registrarAcceso($l$, $d$, $lli$)}{links($lli$)}
+	\tadAxioma{links(registrarLink($l$, $c$, $lli$))}{Ag($l$, links($lli$))}
+	\tadAxioma{links(registrarAcceso($l$, $d$, $lli$))}{links($lli$)}
 	\tadAxioma{categoríaLink($l$, registrarLink($l'$, $c$, $lli$))}{
 		\IF $l$ = $l'$
 		THEN $c$
