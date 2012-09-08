@@ -54,6 +54,58 @@
 \newpage
 
 %TADS
+\section{TAD \tadNombre{ÁrbolDeCategorías}}
+\begin{tad}{\tadNombre{ÁrbolDeCategorías}}
+
+	\tadGeneros{árbolDeCategorías}
+	
+	\tadExporta{árbolDeCategorías, generadores, observadores básicos, contiene?, buscarNodo, aplanar}
+	
+	\tadUsa{\tadNombre{Bool, Categoría, Conjunto(ÁrbolDeCategorías), Conjunto(Categoría)}}
+	
+	\tadIgualdadObservacional{a}{a'}{árbolDeCategorías}{raíz($a$) \igobs raíz($a'$) $\land$ hijos($a$) \igobs hijos($a'$)}
+
+	\tadAlinearFunciones{buscarNodoEnConjunto}{categoría/c,conj(árbolDeCategorías)/as}
+	
+	\tadObservadores
+	\tadOperacion{raíz}{árbolDeCategorías}{categoría}{}
+	\tadOperacion{hijos}{árbolDeCategorías}{conj(árbolDeCategorías)}{}
+
+	\tadGeneradores
+	\tadOperacion{árbol}{categoría/c,conj(árbolDeCategorías)/as}{árbolDeCategorías}{}
+	
+	\tadOtrasOperaciones
+	\tadOperacion{contiene?}{categoría,árbolDeCategorías}{bool}{}
+	\tadOperacion{buscarNodo}{categoría/c,árbolDeCategorías/a}{árbolDeCategorías}{contiene?($c$, $a$)}
+	\tadOperacion{buscarNodoEnConjunto}{categoría,conj(árbolDeCategorías)}{árbolDeCategorías}{}
+	\tadOperacion{aplanar}{árbolDeCategorías}{conj(categoría)}{}
+	\tadOperacion{aplanarConjunto}{conj(árbolDeCategorías)}{conj(categoría)}{}	
+
+	\tadAlinearAxiomas{buscarNodoEnConjunto($c$, $as$)}
+
+	\tadAxiomas[\paratodo{categoría}{c}, \paratodo{árbolDeCategorías}{a}, \paratodo{conj(árbolDeCategorías)}{as}]
+	
+	\tadAxioma{raíz(árbol($c$, $as$))}{$c$}
+	\tadAxioma{hijos(árbol($c$, $as$))}{$as$}
+	\tadAxioma{contiene?($c$, $a$)}{$c$ $\in$ aplanar($a$)}	
+	\tadAxioma{buscarNodo($c$, $a$)}{buscarNodoEnConjunto($c$, Ag($a$, $\emptyset$))}		
+	\tadAxioma{buscarNodoEnConjunto($c$, $as$)}{
+		\IF $c$ = raíz(dameUno($as$)
+		THEN dameUno($as$)
+		ELSE buscarNodoEnConjunto($c$, hijos(dameUno($as$)) $\cup$ sinUno($as$))
+		FI
+	}
+	\tadAxioma{aplanar($a$)}{aplanarConjunto(Ag($a$, $\emptyset$))}
+	\tadAxioma{aplanarConjunto($as$)}{
+		\IF $\emptyset$?($as$)
+		THEN $\emptyset$
+		ELSE Ag(raíz(dameUno($as$)), \\
+			\hspace*{5mm} aplanarConjunto(hijos(dameUno($as$)) $\cup$ sinUno($as$)))
+		FI
+	}
+\end{tad}
+
+
 \section{TAD \tadNombre{Bool}}
 
 \begin{tad}{\tadNombre{Bool}}
