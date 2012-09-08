@@ -39,9 +39,9 @@
 \cfoot{\thepage /\pageref{LastPage}}
 \renewcommand{\footrulewidth}{0.4pt}
 
-\author{Algoritmos y Estructuras de Datos II, DC, UBA.}
-\date{}
 \title{Tipos abstractos de datos básicos}
+\author{Algoritmos y Estructuras de Datos II, DC, UBA.}
+\date{8 de Septiembre de 2012}
 
 \begin{document}
 
@@ -76,12 +76,12 @@
 
 	\tadAlinearFunciones{buscarNodoEnConjunto}{categoría/c,conj(árbolDeCategorías)/as}
 	
+	\tadGeneradores
+	\tadOperacion{árbol}{categoría/c,conj(árbolDeCategorías)/as}{árbolDeCategorías}{}
+	
 	\tadObservadores
 	\tadOperacion{raíz}{árbolDeCategorías}{categoría}{}
 	\tadOperacion{hijos}{árbolDeCategorías}{conj(árbolDeCategorías)}{}
-
-	\tadGeneradores
-	\tadOperacion{árbol}{categoría/c,conj(árbolDeCategorías)/as}{árbolDeCategorías}{}
 	
 	\tadOtrasOperaciones
 	\tadOperacion{contiene?}{categoría,árbolDeCategorías}{bool}{}
@@ -90,10 +90,8 @@
 	\tadOperacion{aplanar}{árbolDeCategorías}{conj(categoría)}{}
 	\tadOperacion{aplanarConjunto}{conj(árbolDeCategorías)}{conj(categoría)}{}	
 
-	\tadAlinearAxiomas{buscarNodoEnConjunto($c$, $as$)}
-
 	\tadAxiomas[\paratodo{categoría}{c}, \paratodo{árbolDeCategorías}{a}, \paratodo{conj(árbolDeCategorías)}{as}]
-	
+	\tadAlinearAxiomas{buscarNodoEnConjunto($c$, $as$)}	
 	\tadAxioma{raíz(árbol($c$, $as$))}{$c$}
 	\tadAxioma{hijos(árbol($c$, $as$))}{$as$}
 	\tadAxioma{contiene?($c$, $a$)}{$c$ $\in$ aplanar($a$)}	
@@ -109,11 +107,111 @@
 		\IF $\emptyset$?($as$)
 		THEN $\emptyset$
 		ELSE Ag(raíz(dameUno($as$)), \\
-			\hspace*{5mm} aplanarConjunto(hijos(dameUno($as$)) $\cup$ sinUno($as$)))
+			\hspace*{5mm}aplanarConjunto(hijos(dameUno($as$)) $\cup$ sinUno($as$)))
 		FI
 	}
 \end{tad}
 
+\section{TAD \tadNombre{LinkLinkIt}}
+\begin{tad}{\tadNombre{LinkLinkIt}}
+
+	\tadGeneros{linkLinkIt}
+	
+	\tadExporta{linkLinkIt, generadores, observadores básicos, \#LinksEnCategoría, \#AccesosMásRecientes}
+	
+	\tadUsa{\tadNombre{Bool, Nat, Categoría, Link, Día, ÁrbolDeCategorías, Conjunto(Categoría),\\ Conjunto(Link)}}
+	
+	\tadIgualdadObservacional{lli}{lli'}{linkLinkIt}{
+        darÁrbolDeCategorías($lli$) \igobs \\
+        \hspace*{5mm}darÁrbolDeCategorías($lli'$) $\land$ \\
+		links($lli$) \igobs links($lli'$) $\yluego$ \\
+		$(\forall l:\text{link})$ ($l$ $\in$ links($lli$) $\impluego$ ( \\
+		\hspace*{5mm}categoríaLink($l$, $lli$) \igobs categoríaLink($l$, $lli'$) $\land$ \\
+		\hspace*{5mm}$(\forall d:\text{día})$ (\#AccesosPorDía($l$, $d$, $lli$) \igobs \\
+		\hspace*{10mm}\#AccesosPorDía($l$, $d$, $lli'$))))	
+	}
+
+	\tadAlinearFunciones{darÁrbolDeCategorías}{link/l,categoría/c,linkLinkIt/lli}
+	
+	\tadGeneradores
+	\tadOperacion{iniciar}{árbolDeCategorías}{linkLinkIt}{}
+	\tadOperacion{registrarLink}{link/l,categoría/c,linkLinkIt/lli}{linkLinkIt}{
+		$\neg$($l$ $\in$ links($lli$)) $\land$ contiene?($c$, darÁrbolDeCategorías($lli$))
+	}
+	\tadOperacion{registrarAcceso}{link/l,día/d,linkLinkIt/lli}{linkLinkIt}{
+		$l$ $\in$ links($lli$) $\land$ $d$ $\geq$ díaÚltimoAcceso($lli$)
+	}
+	
+	\tadObservadores
+	\tadOperacion{darÁrbolDeCategorías}{linkLinkIt}{árbolDeCategorías}{}	
+	\tadOperacion{links}{linkLinkIt}{conj(link)}{}		
+	\tadOperacion{categoríaLink}{link/l,linkLinkIt/lli}{categoría}{$l$ $\in$ links($lli$)}	
+	\tadOperacion{\#AccesosPorDía}{link/l,día/d,linkLinkIt/lli}{nat}{$l$ $\in$ links($lli$)}
+
+	\tadAlinearFunciones{filtrarYContarLinksPorCategoría}{conj(links)/ls,conj(categoría)/cs,linkLinkIt/lli}
+
+	\tadOtrasOperaciones	
+	\tadOperacion{díaÚltimoAcceso}{linkLinkIt}{nat}{}
+	\tadOperacion{\#LinksEnCategoría}{categoría/c,linkLinkIt/lli}{nat}{contiene?($c$, darÁrbolDeCategorías($lli$)}
+	\tadOperacion{filtrarYContarLinksPorCategoría}{conj(links)/ls,conj(categoría)/cs,linkLinkIt/lli}{bool}{$ls$ $\subseteq$ links($lli$)}
+	\tadOperacion{\#AccesosMásRecientes}{link/l,linkLinkIt/lli}{nat}{$l$ $\in$ links($lli$)}
+		
+	\tadAxiomas[\paratodo{categoría}{c}, \paratodo{conj(categoría)}{cs}, \paratodo{link}{l,l'}, \paratodo{conj(link)}{ls}, \paratodo{día}{d,d'},\\ \paratodo{árbolDeCategorías}{a}, \paratodo{linkLinkIt}{lli}]
+	\tadAlinearAxiomas{\#AccesosPorDía($l$, $d$, registrarAcceso($l'$, $d'$, $lli$))}
+	\tadAxioma{darÁrbolDeCategorías(iniciar($a$))}{$a$}
+	\tadAxioma{darÁrbolDeCategorías(registrarLink($l$, $c$, $lli$))}{darÁrbolDeCategorías($lli$)}
+	\tadAxioma{darÁrbolDeCategorías(registrarAcceso($l$, $d$, $lli$))}{darÁrbolDeCategorías($lli$)}	
+	\tadAxioma{links(iniciar($a$))}{$\emptyset$}
+	\tadAxioma{links(registrarLink($l$, $c$, $lli$)}{Ag($l$, links($lli$))}
+	\tadAxioma{links(registrarAcceso($l$, $d$, $lli$)}{links($lli$)}
+	\tadAxioma{categoríaLink($l$, registrarLink($l'$, $c$, $lli$))}{
+		\IF $l$ = $l'$
+		THEN $c$
+		ELSE categoríaLink($l$, $lli$)
+		FI
+	}
+	\tadAxioma{categoríaLink($l$, registrarAcceso($l'$, $d$, $lli$))}{categoríaLink($l$, $lli$)}
+	\tadAxioma{\#AccesosPorDía($l$, $d$, iniciar($a$))}{0}
+	\tadAxioma{\#AccesosPorDía($l$, $d$, registrarLink($l'$, $c$, $lli$))}{\#AccesosPorDía($l$, $d$, $lli$)}
+	\tadAxioma{\#AccesosPorDía($l$, $d$, registrarAcceso($l'$, $d'$, $lli$))}{
+		(\IF $l$ = $l'$ $\land$ $d$ = $d'$
+		THEN 1
+		ELSE 0
+		FI) +\\
+		\hspace*{5mm}\#AccesosPorDía($l$, $d$, $lli$)
+	}
+	\tadAxioma{díaÚltimoAcceso(iniciar($a$))}{0}
+	\tadAxioma{díaÚltimoAcceso(registrarLink($l$, $c$, $lli$))}{díaÚltimoAcceso($lli$)}
+	\tadAxioma{díaÚltimoAcceso(registrarAcceso($l$, $d$, $lli$))}{$d$}
+	\tadAxioma{\#LinksEnCategoría($c$, $lli$)}{
+		filtrarYContarLinksPorCategoría(\\
+			\hspace*{5mm}links($lli$),\\
+			\hspace*{5mm}aplanar(buscarNodo($c$, darÁrbolDeCategorías($lli$))),\\
+			\hspace*{5mm}$lli$)
+	}
+	\tadAxioma{filtrarYContarLinksPorCategoría($ls$, $cs$, $lli$)}{
+		\IF $\emptyset$?($ls$)
+		THEN 0
+		ELSE
+			({\IF categoríaLink(dameUno($ls$), $lli$) $\in$ $cs$
+			THEN 1
+			ELSE 0
+			FI}) + \\
+			filtrarYContarLinksPorCategoría(sinUno($ls$), $cs$, $lli$)
+		FI
+	}
+	\tadAxioma{\#AccesosMásRecientes($l$, $lli$)}{
+		\#AccesosPorDía($l$, díaÚltimoAcceso($lli$), $lli$) +\\
+		(\IF díaÚltimoAcceso($lli$) $\geq$ 1
+		THEN \#AccesosPorDía($l$, díaÚltimoAcceso($lli$) - 1, $lli$) 
+		ELSE 0
+		FI) + \\
+		(\IF díaÚltimoAcceso($lli$) $\geq$ 2
+		THEN \#AccesosPorDía($l$, díaÚltimoAcceso($lli$) - 2, $lli$) 
+		ELSE 0
+		FI)
+	}
+\end{tad}
 
 \section{TAD \tadNombre{Bool}}
 
