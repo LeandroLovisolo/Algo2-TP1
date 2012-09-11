@@ -249,8 +249,9 @@ Recuperatorio   &&\\
 	\tadOperacion{\#LinksEnCategoría}{categoría/c,linkLinkIt/lli}{nat}{contiene?($c$, darÁrbolDeCategorías($lli$)}
 	\tadOperacion{filtrarYContarLinksPorCategoría}{conj(links)/ls,conj(categoría)/cs,linkLinkIt/lli}{bool}{$ls$ $\subseteq$ links($lli$)}
 	\tadOperacion{\#AccesosMásRecientes}{link/l,linkLinkIt/lli}{nat}{$l$ $\in$ links($lli$)}
+	\tadOperacion{\#AccesosEnConjuntoDeDías}{link/l,conj(día),linkLinkIt/lli}{nat}{$l$ $\in$ links($lli$)}		
 		
-	\tadAxiomas[\paratodo{categoría}{c}, \paratodo{conj(categoría)}{cs}, \paratodo{link}{l,l'}, \paratodo{conj(link)}{ls}, \paratodo{día}{d,d'},\\ \paratodo{árbolDeCategorías}{a}, \paratodo{linkLinkIt}{lli}]
+	\tadAxiomas[\paratodo{categoría}{c}, \paratodo{conj(categoría)}{cs}, \paratodo{link}{l,l'}, \paratodo{conj(link)}{ls}, \paratodo{día}{d,d'}, \paratodo{conj(día)}{ds},\\ \paratodo{árbolDeCategorías}{a}, \paratodo{linkLinkIt}{lli}]
 	\tadAlinearAxiomas{\#AccesosPorDía($l$, $d$, registrarAcceso($l'$, $d'$, $lli$))}
 	\tadAxioma{darÁrbolDeCategorías(iniciar($a$))}{$a$}
 	\tadAxioma{darÁrbolDeCategorías(registrarLink($l$, $c$, $lli$))}{darÁrbolDeCategorías($lli$)}
@@ -308,16 +309,16 @@ Recuperatorio   &&\\
 		FI
 	}
 	\tadAxioma{\#AccesosMásRecientes($l$, $lli$)}{
-		\#AccesosPorDía($l$, díaÚltimoAcceso($lli$), $lli$) +\\
-		(\IF díaÚltimoAcceso($lli$) $\geq$ 1
-		THEN \#AccesosPorDía($l$, díaÚltimoAcceso($lli$) - 1, $lli$) 
-		ELSE 0
-		FI) + \\
-		(\IF díaÚltimoAcceso($lli$) $\geq$ 2
-		THEN \#AccesosPorDía($l$, díaÚltimoAcceso($lli$) - 2, $lli$) 
-		ELSE 0
-		FI)
+		\#AccesosEnConjuntoDeDías(\\
+		\hspace*{5mm}$l$, díasAccesosRecientes($lli$), $lli$)
 	}
+	\tadAxioma{\#AccesosEnConjuntoDeDías($l$, $ds$, $lli$)}{
+		\IF $\emptyset$?($ds$)
+		THEN 0
+		ELSE \#AccesosPorDía($l$, dameUno($ds$), $lli$) +\\
+			\hspace*{5mm}\#AccesosEnConjuntoDeDías($l$, sinUno($ds$), $lli$)
+		FI
+	}	
 \end{tad}
 
 \end{document}
