@@ -280,15 +280,13 @@ Recuperatorio   &&\\
 	\tadAxioma{díasAccesosRecientes(iniciar($a$))}{$\emptyset$}	
 	\tadAxioma{díasAccesosRecientes(registrarLink($l$, $c$, $lli$))}{díasAccesosRecientes($lli$)}
 	\tadAxioma{díasAccesosRecientes(registrarAcceso($l$, $d$, $lli$))}{
-		\IF díaÚltimoAcceso($lli$) = 0
+		\IF $d$ = 0
 		THEN Ag(0, $\emptyset$)
 		ELSE
-			({\IF díaÚltimoAcceso($lli$) = 1
+			({\IF $d$ = 1
 			THEN Ag(1, Ag(0, $\emptyset$))
 			ELSE
-				Ag(díaÚltimoAcceso($lli$),\\
-					\hspace*{5mm}Ag(díaÚltimoAcceso($lli$) - 1,\\
-						\hspace*{10mm}Ag(díaÚltimoAcceso($lli$) - 2, $\emptyset$)))				
+				Ag($d$, Ag($d$ - 1, Ag($d$ - 2, $\emptyset$)))				
 			FI})
 		FI
 	}	
